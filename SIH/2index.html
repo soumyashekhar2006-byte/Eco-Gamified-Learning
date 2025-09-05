@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>EcoLearn — Offline Demo (Full 120 + Fun bank)</title>
+  <style>
+    :root{
+      --bg:#f0fbf6; --card:#ffffff; --accent:#16a34a; --muted:#6b7280;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#f0fff6,#e6f7ef);color:#072b22}
+    header{padding:14px 18px; display:flex; align-items:center; gap:12px; border-bottom:1px solid rgba(2,6,23,.06)}
+    .brand{font-weight:800;font-size:20px}
+    .wrap{max-width:1100px;margin:18px auto;padding:12px;display:grid;gap:12px}
+    .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:0 10px 30px rgba(2,6,23,.06)}
+    input,select,textarea,button{font-family:inherit}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid #e6f0ec;width:100%}
+    button{padding:10px 12px;border-radius:10px;border:0;background:var(--accent);color:white;cursor:pointer}
+    button.ghost{background:transparent;color:var(--accent);border:1px solid #d1fae5}
+    .row{display:flex;gap:10px;align-items:center}
+    .muted{color:var(--muted);font-size:.95rem}
+    .hidden{display:none}
+    .grid{display:grid;gap:12px}
+    .columns-2{grid-template-columns:1fr 340px}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid #eef7f1;text-align:left}
+    #fact{position:fixed;right:18px;bottom:18px;background:#fff;padding:12px;border-radius:10px;border-left:4px solid var(--accent);box-shadow:0 12px 40px rgba(2,6,23,.12);display:none}
+    .badge{display:inline-block;background:#dcfce7;color:#065f46;padding:6px 10px;border-radius:999px;margin:4px}
+    canvas{border-radius:8px}
+    @media(max-width:900px){ .columns-2{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">🧸🌿 EcoLearn — Offline (Full Banks)</div>
+    <div style="flex:1"></div>
+    <div class="muted">Offline demo — double-click index.html</div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- Registration -->
+    <section id="regCard" class="card">
+      <h2>Register / Login</h2>
+      <div id="regForm">
+        <div class="grid" style="grid-template-columns:1fr 1fr;">
+          <input id="inpName" placeholder="Full name">
+          <input id="inpEmail" placeholder="Email">
+        </div>
+        <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:8px">
+          <input id="inpMobile" placeholder="Mobile (optional)">
+          <select id="inpClass">
+            <option value="">Select Class</option>
+            <option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option>
+            <option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option>
+            <option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option>
+            <option value="10">Class 10</option><option value="11">Class 11</option><option value="12">Class 12</option>
+          </select>
+        </div>
+        <div style="margin-top:10px" class="row">
+          <button id="btnRegister">Create Account</button>
+          <button id="btnLoad" class="ghost">Load Existing</button>
+        </div>
+        <div class="muted" style="margin-top:8px">Data is stored locally in your browser (localStorage).</div>
+      </div>
+    </section>
+
+    <!-- App -->
+    <section id="app" class="hidden columns-2">
+      <div>
+
+        <!-- Profile Card -->
+        <div class="card row" style="align-items:center;gap:12px">
+          <div style="width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:#f0fff4;border:2px solid #bbf7d0;font-size:20px" id="avatar">🧒</div>
+          <div>
+            <div style="font-weight:800" id="pName">Student</div>
+            <div class="muted">Class <span id="pClass">1</span></div>
+            <div style="margin-top:6px"><span id="pTier" class="badge">Bronze</span> <span class="muted">Eco-Points: <strong id="pPoints">0</strong></span></div>
+          </div>
+          <div style="flex:1"></div>
+          <div class="row">
+            <button id="btnLogout" class="ghost">Logout</button>
+            <button id="btnRoadmap" class="ghost">Roadmap</button>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="card" style="margin-top:12px">
+          <div class="row" style="align-items:center">
+            <button id="btnQuiz">Take Quiz</button>
+            <button id="btnGames">Play Games</button>
+            <button id="btnChallenges">Eco Challenges</button>
+            <button id="btnLeaderboard">Leaderboard</button>
+            <button id="btnClassComp" class="ghost">Class Competition</button>
+          </div>
+        </div>
+
+        <!-- Quiz Panel -->
+        <div id="quizCard" class="card hidden" style="margin-top:12px">
+          <h3>Quiz</h3>
+          <div class="row" style="align-items:center;gap:12px;">
+            <label class="muted">Mode:</label>
+            <select id="quizMode">
+              <option value="syllabus">Syllabus (NCERT-style)</option>
+              <option value="fun">Fun Eco Quiz</option>
+            </select>
+            <div style="flex:1"></div>
+            <button id="startQuizBtn">Start 10-Q Quiz</button>
+          </div>
+          <div id="quizArea" style="margin-top:12px"></div>
+        </div>
+
+        <!-- Games Panel -->
+        <div id="gamesCard" class="card hidden" style="margin-top:12px">
+          <h3>Games</h3>
+          <div class="grid" style="grid-template-columns:1fr 1fr;gap:12px">
+            <div class="card">
+              <h4>Memory Match</h4>
+              <div id="memGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px"></div>
+              <div style="margin-top:8px" class="row"><button id="memNew">New Memory</button><div style="flex:1"></div><div class="muted">Matches: <span id="memCnt">0</span></div></div>
+            </div>
+            <div class="card">
+              <h4>Snake</h4>
+              <canvas id="snakeCanvas" width="320" height="200" style="background:#000;display:block;border-radius:8px"></canvas>
+              <div style="margin-top:8px" class="row"><button id="snakeStart">Start Snake</button><div style="flex:1"></div><div class="muted">Score: <span id="snakeScore">0</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Challenges -->
+        <div id="challengesCard" class="card hidden" style="margin-top:12px">
+          <h3>Eco Challenges</h3>
+          <div id="challengeList"></div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div id="leaderCard" class="card hidden" style="margin-top:12px">
+          <h3>Leaderboard</h3>
+          <div id="leaderboard"></div>
+          <div style="margin-top:8px" class="muted">Top players — stored locally</div>
+        </div>
+
+        <!-- Class Competition -->
+        <div id="classCompCard" class="card hidden" style="margin-top:12px">
+          <h3>Class Competition (Average Points)</h3>
+          <div id="classComp"></div>
+        </div>
+
+      </div>
+
+      <!-- Right column -->
+      <aside>
+        <div class="card">
+          <h4>Badges</h4>
+          <div id="badgesArea"></div>
+          <hr>
+          <h4>Eco Pet</h4>
+          <div id="ecoPet" style="font-size:48px;text-align:center">🌱</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4>Quick Facts</h4>
+          <div class="muted">Answer a question correctly to see a fun eco fact!</div>
+        </div>
+      </aside>
+    </section>
+
+  </main>
+
+  <div id="fact"></div>
+
+  <script>
+  /*************************************************************************
+   * Offline EcoLearn — Full question banks (10 per class for two modes)
+   * Save as index.html and open locally.
+   **************************************************************************/
+
+  // ---------- Local storage helpers ----------
+  const STORAGE_KEY_USERS = 'eco_users_v2';
+  function readUsers(){ return JSON.parse(localStorage.getItem(STORAGE_KEY_USERS) || '[]'); }
+  function writeUsers(u){ localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(u)); }
+
+  // ---------- App state ----------
+  let users = readUsers();
+  let currentUser = null;
+
+  // ---------- DOM refs ----------
+  const regCard = document.getElementById('regCard');
+  const app = document.getElementById('app');
+  const btnRegister = document.getElementById('btnRegister');
+  const btnLoad = document.getElementById('btnLoad');
+  const inpName = document.getElementById('inpName');
+  const inpEmail = document.getElementById('inpEmail');
+  const inpMobile = document.getElementById('inpMobile');
+  const inpClass = document.getElementById('inpClass');
+  const avatar = document.getElementById('avatar');
+  const pName = document.getElementById('pName');
+  const pClass = document.getElementById('pClass');
+  const pPoints = document.getElementById('pPoints');
+  const pTier = document.getElementById('pTier');
+  const badgesArea = document.getElementById('badgesArea');
+  const ecoPet = document.getElementById('ecoPet');
+  const factBox = document.getElementById('fact');
+
+  // Panels
+  const quizCard = document.getElementById('quizCard');
+  const gamesCard = document.getElementById('gamesCard');
+  const challengesCard = document.getElementById('challengesCard');
+  const leaderCard = document.getElementById('leaderCard');
+  const classCompCard = document.getElementById('classCompCard');
+  const quizModeSel = document.getElementById('quizMode');
+  const startQuizBtn = document.getElementById('startQuizBtn');
+  const quizArea = document.getElementById('quizArea');
+
+  // Games refs
+  const memGrid = document.getElementById('memGrid');
+  const memNewBtn = document.getElementById('memNew');
+  const memCnt = document.getElementById('memCnt');
+  const snakeCanvas = document.getElementById('snakeCanvas');
+  const snakeScoreEl = document.getElementById('snakeScore');
+
+  // other
+  const leaderBoardEl = document.getElementById('leaderboard');
+  const classCompEl = document.getElementById('classComp');
+  const challengeListEl = document.getElementById('challengeList');
+
+  // Buttons
+  document.getElementById('btnRegister').onclick = onRegister;
+  document.getElementById('btnLoad').onclick = loadExisting;
+  document.getElementById('btnLogout').onclick = logout;
+  document.getElementById('btnQuiz').onclick = ()=>showPanel('quiz');
+  document.getElementById('btnGames').onclick = ()=>showPanel('games');
+  document.getElementById('btnChallenges').onclick = ()=>showPanel('challenges');
+  document.getElementById('btnLeaderboard').onclick = ()=>showPanel('leader');
+  document.getElementById('btnClassComp').onclick = ()=>showPanel('classComp');
+  document.getElementById('btnRoadmap').onclick = ()=>alert('Roadmap: Prototype -> Expand -> Backend -> Deploy. (You can use the canvas code for slides.)');
+
+  startQuizBtn.onclick = startQuiz;
+
+  memNewBtn.onclick = memNew;
+
+  // ---------- ECO FACTS ----------
+  const ECO_FACTS = [
+    "🌱 Trees reduce air temperature and cool cities.",
+    "🐝 Bees help pollinate many of the foods we eat.",
+    "💧 Saving 1 liter of water saves energy in treatment & transport.",
+    "♻️ Recycling saves energy and reduces waste in landfills.",
+    "🌊 Oceans absorb much of the world's heat and CO₂.",
+    "⚡ Turning off unused lights saves electricity and money.",
+    "🌍 Small actions by students create community ripple effects."
+  ];
+  function showFact(){
+    const f = ECO_FACTS[Math.floor(Math.random()*ECO_FACTS.length)];
+    factBox.innerText = f; factBox.style.display='block';
+    setTimeout(()=>factBox.style.display='none',3500);
+  }
+
+  // ---------- QUESTION BANKS ----------
+  // For each class 1..12 there are two arrays: syllabus (NCERT-like) and fun (eco game)
+  const BANK = {
+    syllabus: {
+      1: [
+        {q:"Which of these is a tree?", opts:["🌳","🚗","🐟"], a:0},
+        {q:"What do plants give us to breathe?", opts:["Oxygen","Smoke","Dust"], a:0},
+        {q:"Which animal says 'Moo'?", opts:["Cow","Dog","Cat"], a:0},
+        {q:"Where do seeds grow?", opts:["Soil","Air","Water (no soil)"], a:0},
+        {q:"What color are most leaves?", opts:["Green","Red","Blue"], a:0},
+        {q:"Which is wet waste?", opts:["Banana peel","Plastic","Glass"], a:0},
+        {q:"Which is the star in our sky?", opts:["Sun","Moon","Earth"], a:0},
+        {q:"Which helps us cross a river?", opts:["Bridge","Shoe","Phone"], a:0},
+        {q:"We should not do this on roads:", opts:["Litter","Walk","Smile"], a:0},
+        {q:"Turn off the tap to save:", opts:["Water","Sand","Soil"], a:0}
+      ],
+      2: [
+        {q:"Which is a source of water?", opts:["River","Car","Bed"], a:0},
+        {q:"Leaves fall in which season?", opts:["Autumn","Summer","Winter"], a:0},
+        {q:"Which animal gives us milk?", opts:["Cow","Lion","Tiger"], a:0},
+        {q:"Paper should be thrown in which bin?", opts:["Dry/Recycle","Wet","E-waste"], a:0},
+        {q:"Which helps plants grow?", opts:["Sunlight","Chocolate","Salt"], a:0},
+        {q:"Which is a farm animal?", opts:["Goat","Shark","Eagle"], a:0},
+        {q:"We must save electricity by:", opts:["Turning off lights","Keeping them on","Breaking bulbs"], a:0},
+        {q:"Which is formed from tiny drops of water in sky?", opts:["Cloud","Rock","Sand"], a:0},
+        {q:"What do bees collect from flowers?", opts:["Nectar","Soil","Paper"], a:0},
+        {q:"Which is not a fruit?", opts:["Carrot","Apple","Banana"], a:0}
+      ],
+      3: [
+        {q:"Which gas do plants absorb?", opts:["Carbon dioxide","Oxygen","Helium"], a:0},
+        {q:"Compost comes from:", opts:["Kitchen waste","Plastic","Glass"], a:0},
+        {q:"What pollinates many flowers?", opts:["Bees","Cars","Hammers"], a:0},
+        {q:"Why plant trees?", opts:["Shade & oxygen","Noise","Heat bulbs"], a:0},
+        {q:"Which is renewable energy?", opts:["Solar","Coal","Petrol"], a:0},
+        {q:"Which animal lives in water?", opts:["Fish","Cow","Hen"], a:0},
+        {q:"How to reduce waste?", opts:["Reuse & recycle","Throw everything","Burn everything"], a:0},
+        {q:"What is soil used for?", opts:["Growing plants","Making phones","Flying"], a:0},
+        {q:"What keeps us warm in winter?", opts:["Clothes & fire","Water","Paper"], a:0},
+        {q:"Where do birds build nests?", opts:["Trees","Bookshelves","Shoes"], a:0}
+      ],
+      4: [
+        {q:"Greenhouse gases include:", opts:["CO₂","O₂","N₂"], a:0},
+        {q:"Afforestation means:", opts:["Planting trees","Cutting trees","Burning trees"], a:0},
+        {q:"Recycle symbol shows:", opts:["♻️","☢️","⚠️"], a:0},
+        {q:"Which protects soil from erosion?", opts:["Plant roots","Smoke","Cars"], a:0},
+        {q:"What causes air pollution?", opts:["Vehicle smoke","Rain","Snow"], a:0},
+        {q:"What is a wetland?", opts:["Area with water","Desert","Mountain peak"], a:0},
+        {q:"Solar energy comes from:", opts:["Sun","Moon","Stars"], a:0},
+        {q:"Which cleans water at home?", opts:["Boiling","Mixing mud","Sunlight only"], a:0},
+        {q:"Which is an e-waste?", opts:["Old mobile battery","Leaves","Paper"], a:0},
+        {q:"We should save water by:", opts:["Fixing leaks","Leaving taps open","Wasting"], a:0}
+      ],
+      5: [
+        {q:"Biodiversity means:", opts:["Many life forms","One kind only","No life"], a:0},
+        {q:"Deforestation causes:", opts:["Soil erosion","More trees","Rainfall increase"], a:0},
+        {q:"Three Rs refer to:", opts:["Reduce Reuse Recycle","Read Right Run","Rise Run Repeat"], a:0},
+        {q:"Which is a fossil fuel?", opts:["Coal","Solar","Wind"], a:0},
+        {q:"Mangroves grow in:", opts:["Coastal areas","Desert","Mountains"], a:0},
+        {q:"Noise pollution affects:", opts:["Hearing","Smell","Taste"], a:0},
+        {q:"LED saves energy compared to:", opts:["Incandescent bulb","Sun","Star"], a:0},
+        {q:"Compost is made of:", opts:["Organic waste","Plastic","Glass"], a:0},
+        {q:"Which helps reduce flood risk?", opts:["Planting trees","Cutting trees","Burning forests"], a:0},
+        {q:"A rain gauge measures:", opts:["Rainfall","Temperature","Wind"], a:0}
+      ],
+      6: [
+        {q:"Photosynthesis happens in:", opts:["Chloroplasts","Nucleus","Mitochondria"], a:0},
+        {q:"Aquifers store:", opts:["Groundwater","Oil only","Sand"], a:0},
+        {q:"PM2.5 refers to:", opts:["Fine particulate matter","Temperature","Humidity"], a:0},
+        {q:"Eutrophication is due to:", opts:["Excess nutrients","Less nutrients","No sunlight"], a:0},
+        {q:"Endemic species are:", opts:["Only in one region","Everywhere","In water only"], a:0},
+        {q:"Biogas produces mainly:", opts:["Methane","Oxygen","Hydrogen"], a:0},
+        {q:"Carbon sink example:", opts:["Forest","Car","Factory"], a:0},
+        {q:"Which soil conservation method?", opts:["Terracing","Mining","Clearcutting"], a:0},
+        {q:"Which energy source is renewable?", opts:["Wind","Coal","Petrol"], a:0},
+        {q:"Composting reduces:", opts:["Organic waste in landfill","Plastic waste","Glass waste"], a:0}
+      ],
+      7: [
+        {q:"Ozone layer is in which sphere?", opts:["Stratosphere","Troposphere","Mesosphere"], a:0},
+        {q:"Carbon footprint measures:", opts:["Greenhouse gas emissions","Books","Height"], a:0},
+        {q:"Bioaccumulation is:", opts:["Toxin concentration up the food chain","Plant growth","Rock formation"], a:0},
+        {q:"El Niño affects:", opts:["Global weather patterns","Soil only","Mountains only"], a:0},
+        {q:"Ramsar sites protect:", opts:["Wetlands","Forests only","Deserts"], a:0},
+        {q:"Urban heat island due to:", opts:["Concrete & asphalt","More trees","Lakes"], a:0},
+        {q:"Monoculture reduces:", opts:["Biodiversity","Yield instantly","Rainfall"], a:0},
+        {q:"IPAT equation links:", opts:["Impact Population Affluence Technology","Plants Insects Animals Temperature","None"], a:0},
+        {q:"Soil erosion prevention:", opts:["Contour ploughing","Overgrazing","Deforestation"], a:0},
+        {q:"Which reduces water use in irrigation?", opts:["Drip irrigation","Flood irrigation","No irrigation"], a:0}
+      ],
+      8: [
+        {q:"Carrying capacity is:", opts:["Max population environment can support","Weight limit of car","Height of tree"], a:0},
+        {q:"Smog forms from:", opts:["Fog + smoke","Rain + smoke","Sun + rain"], a:0},
+        {q:"Catalytic converters reduce:", opts:["Vehicle emissions","Noise only","Light pollution"], a:0},
+        {q:"Ocean acidification is due to:", opts:["CO₂ absorption","O₂ absorption","N₂ absorption"], a:0},
+        {q:"Microplastics are smaller than:", opts:["5 mm","5 cm","50 cm"], a:0},
+        {q:"Best for kitchen waste:", opts:["Compost","Landfill","Burning"], a:0},
+        {q:"Hybrid vehicles use:", opts:["Petrol + electric","Only petrol","Only electric"], a:0},
+        {q:"Urban green spaces help:", opts:["Reduce heat and pollution","Increase heat","Reduce oxygen"], a:0},
+        {q:"Renewable energy examples:", opts:["Solar & wind","Coal & oil","Nuclear only"], a:0},
+        {q:"Sustainable development balances:", opts:["Environment, society, economy","Only economy","Only technology"], a:0}
+      ],
+      9: [
+        {q:"Nitrogen fixation is done by:", opts:["Rhizobium","CO₂","Ozone"], a:0},
+        {q:"Primary succession starts on:", opts:["Bare rock","Forest","Lake"], a:0},
+        {q:"Biomagnification increases toxins in:", opts:["Higher trophic levels","Soil only","Air only"], a:0},
+        {q:"GWP compares warming to:", opts:["CO₂","O₂","N₂"], a:0},
+        {q:"Photovoltaic cells convert:", opts:["Sunlight to electricity","Wind to electricity","Water to electricity"], a:0},
+        {q:"EIA stands for:", opts:["Environmental Impact Assessment","Energy Internal Audit","Economic Impact Analysis"], a:0},
+        {q:"Sustainable yield means:", opts:["Harvest = regeneration rate","Maximum harvest always","No harvest"], a:0},
+        {q:"Catalase acts on:", opts:["H₂O₂","CO₂","H₂O"], a:0},
+        {q:"Biomass is a form of:", opts:["Stored solar energy","Fossil fuel only","Mineral"], a:0},
+        {q:"Air Quality Index measures:", opts:["Pollution level","Rainfall","Noise"], a:0}
+      ],
+      10: [
+        {q:"Paris Agreement aims to limit warming to around:", opts:["1.5–2°C","5°C","10°C"], a:0},
+        {q:"Kyoto Protocol addressed:", opts:["GHG emissions","Forest planting only","Water usage"], a:0},
+        {q:"BOD measures:", opts:["Organic pollution in water","Temperature of water","Salt content"], a:0},
+        {q:"Fly ash is produced from:", opts:["Thermal power plants","Hydropower","Wind farms"], a:0},
+        {q:"Afforestation helps in:", opts:["Carbon sequestration","Airplane building","Phone making"], a:0},
+        {q:"Ozone hole is mainly over:", opts:["Antarctica","Equator","Tropics"], a:0},
+        {q:"Renewable energy unit (electricity) is:", opts:["kWh","Liters","Meters"], a:0},
+        {q:"Soil salinity affects:", opts:["Crop growth","Air quality","Sound"], a:0},
+        {q:"Sewage treatment reduces:", opts:["BOD and pathogens","Noise","Temperature"], a:0},
+        {q:"Greenhouse gases trap:", opts:["Heat in the atmosphere","Sound","Light"], a:0}
+      ],
+      11: [
+        {q:"Lotka-Volterra models:", opts:["Predator-prey populations","Water cycle","Solar power"], a:0},
+        {q:"CITES deals with:", opts:["Trade in endangered species","Air pollution","Water supply"], a:0},
+        {q:"Edge effect occurs in:", opts:["Fragmented habitats","Open ocean","Desert"], a:0},
+        {q:"IPAT stands for:", opts:["Impact = Population x Affluence x Technology","International Plant and Tree","None"], a:0},
+        {q:"Biogas main combustible gas:", opts:["Methane","Oxygen","Nitrogen"], a:0},
+        {q:"Denitrification converts nitrate to:", opts:["N₂ gas","Ammonia","Nitric acid"], a:0},
+        {q:"Carbon sink example:", opts:["Forests","Cars","Factories"], a:0},
+        {q:"Biodiversity hotspot criteria include:", opts:["High endemism","Low rainfall only","High altitude only"], a:0},
+        {q:"Eutrophication results in:", opts:["Algal blooms and low oxygen","Clean water","Less nutrients"], a:0},
+        {q:"Albedo refers to:", opts:["Reflectivity of a surface","Height","Weight"], a:0}
+      ],
+      12: [
+        {q:"Biodiversity Act (India) was enacted in:", opts:["2002","2000","2010"], a:0},
+        {q:"Clean Development Mechanism relates to:", opts:["Kyoto Protocol","Paris only","Montreal"], a:0},
+        {q:"Ecological footprint measures:", opts:["Land needed to support a lifestyle","CO₂ only","Water only"], a:0},
+        {q:"NPP is:", opts:["GPP - Respiration","Respiration - GPP","GPP + Respiration"], a:0},
+        {q:"Precautionary principle means:", opts:["Act to prevent harm even if not certain","Wait until sure","Ignore risk"], a:0},
+        {q:"LD50 expresses:", opts:["Median lethal dose","Safe dose","Taste threshold"], a:0},
+        {q:"Flue Gas Desulfurization removes:", opts:["SO₂","CO₂","O₃"], a:0},
+        {q:"Island biogeography focuses on:", opts:["Area & isolation","Altitude only","Temperature only"], a:0},
+        {q:"Wetland protection is important for:", opts:["Biodiversity & flood control","Making roads","Mining"], a:0},
+        {q:"Carbon trading is used to:", opts:["Limit emissions via market","Increase emissions","Measure rainfall"], a:0}
+      ]
+    },
+    fun: {
+      1: [
+        {q:"Which emoji is a tree?", opts:["🌳","🚗","🍎"], a:0},
+        {q:"Which animal lives in water?", opts:["🐠","🐮","🦅"], a:0},
+        {q:"Which bin for paper?", opts:["📄 Dry/Recyclable","🍌 Wet","🔋 E-waste"], a:0},
+        {q:"Turn off the light to save?", opts:["Electricity","Soil","Water"], a:0},
+        {q:"What grows from a seed?", opts:["Plant","Stone","Bottle"], a:0},
+        {q:"Which is an insect?", opts:["🐝","🐶","🐘"], a:0},
+        {q:"Which is a fruit?", opts:["🍎","🍞","🥛"], a:0},
+        {q:"Which is used to water plants?", opts:["Water","Paint","Sand"], a:0},
+        {q:"What does rain make?", opts:["Puddles & plants","Fire","Mountain"], a:0},
+        {q:"Which is recyclable symbol?", opts:["♻️","☢️","⚠️"], a:0}
+      ],
+      2: [
+        {q:"Which helps plants grow?", opts:["Sunlight","TV","Shoe"], a:0},
+        {q:"Which is a pet?", opts:["🐶","🦈","🦅"], a:0},
+        {q:"Paper should be put in:", opts:["Recycle bin","Wet bin","Microwave"], a:0},
+        {q:"Which vehicle has two wheels?", opts:["Bicycle","Car","Truck"], a:0},
+        {q:"Which is a toy that swims?", opts:["Boat toy","Rock","Chair"], a:0},
+        {q:"What do bees make?", opts:["Honey","Metal","Plastic"], a:0},
+        {q:"Which food grows on trees?", opts:["Mango","Potato","Egg"], a:0},
+        {q:"Which helps clean the room?", opts:["Sweep","Shout","Sleep"], a:0},
+        {q:"Which animal hops?", opts:["Kangaroo","Cow","Fish"], a:0},
+        {q:"Which is used to draw?", opts:["Pencil","Spoon","Fork"], a:0}
+      ],
+      3: [
+        {q:"Which is a renewable energy?","opts":["☀️ Solar","⛽ Petrol","🪨 Rock"], a:0},
+        {q:"What can you plant at home?", opts:["Seed","Plastic","Iron"], a:0},
+        {q:"Which is good for bees?", opts:["Flowers","Noise","Plastic"], a:0},
+        {q:"Which helps keep rivers clean?", opts:["Not throwing trash","Throwing bottles","Dumping waste"], a:0},
+        {q:"Which animal is big and grey?", opts:["Elephant","Ant","Sparrow"], a:0},
+        {q:"Which is good for compost?", opts:["Leaves","Glass","Metal"], a:0},
+        {q:"Which is a baby tree?", opts:["Sapling","Stone","Toy"], a:0},
+        {q:"Which means reuse?", opts:["Use again","Throw away","Burn"], a:0},
+        {q:"Which is smart transport for short trips?", opts:["Walking/cycling","Car","Plane"], a:0},
+        {q:"Which drink comes from plants?", opts:["Tea/Herbal","Plastic","Metal"], a:0}
+      ],
+      4: [
+        {q:"What would you pick to reduce waste?", opts:["Reusable bottle","Single-use bottle","No bottle"], a:0},
+        {q:"Which energy turns on a lamp?", opts:["Electricity","Wind in a jar","Soil"], a:0},
+        {q:"If you see plastic in a park, you should:", opts:["Pick it & dispose","Ignore it","Hide it"], a:0},
+        {q:"What is a compostable item?", opts:["Banana peel","Battery","Glass"], a:0},
+        {q:"Which helps save energy at school?", opts:["Switch off unused lights","Keep all lights on","Break bulbs"], a:0},
+        {q:"Which animal helps spread seeds?", opts:["Elephant/Monkey (answers vary)"], opts2:[], a:0},
+        {q:"Which is a water source?", opts:["Well/River","Oven","Phone"], a:0},
+        {q:"Which transport produces less pollution?", opts:["Bicycle","Old truck","Plane"], a:0},
+        {q:"Which does NOT belong to plastic recycling?", opts:["Banana peel","Bottle","Paper"], a:0},
+        {q:"What can you donate to reduce waste?", opts:["Old clothes in good condition","Broken glass","Used battery"], a:0}
+      ],
+      5: [
+        {q:"Which practice conserves soil?", opts:["Terracing/Plant cover","Mining","Overgrazing"], a:0},
+        {q:"Which energy is clean?", opts:["Wind","Coal","Diesel"], a:0},
+        {q:"What should you do with e-waste?", opts:["Take to e-waste center","Throw in bin","Burn"], a:0},
+        {q:"Which animal is endangered?", opts:["Tiger","Cow","Goat"], a:0},
+        {q:"Which saves water at home?", opts:["Fix leaks","Leave tap dripping","Waste"], a:0},
+        {q:"What is organic farming?", opts:["No synthetic chemicals","Use more chemical fertilizers","Burn fields"], a:0},
+        {q:"What should you do with old paper?", opts:["Recycle","Throw in wet bin","Bury"], a:0},
+        {q:"Which protects biodiversity?", opts:["Protected areas & sustainable use","Large-scale deforestation","Overfishing"], a:0},
+        {q:"Which is a non-renewable resource?", opts:["Coal","Sunlight","Wind"], a:0},
+        {q:"Which reduces climate change impact?", opts:["Plant trees","Increase waste","More AC use"], a:0}
+      ],
+      6: [
+        {q:"Which organism fixes nitrogen in soil?", opts:["Rhizobium in legumes","Fish","Rock"], a:0},
+        {q:"How does planting trees help cities?", opts:["Reduce temperature and improve air","Make roads","Increase noise"], a:0},
+        {q:"What is compost used for?", opts:["Improve soil fertility","Fuel for cars","Build houses"], a:0},
+        {q:"Which is a greenhouse gas?", opts:["CO₂","O₂","Neon"], a:0},
+        {q:"Which practice reduces soil erosion?", opts:["Contour farming","Clearcutting","Overgrazing"], a:0},
+        {q:"Which energy is from the sun?", opts:["Solar PV","Coal","Gas"], a:0},
+        {q:"Which causes respiratory problems?", opts:["Air pollution","Clean air","Pure water"], a:0},
+        {q:"What is biodegradable?", opts:["Paper/food","Plastic (generally no)","Glass"], a:0},
+        {q:"Which conserves water in agriculture?", opts:["Drip irrigation","Flood irrigation","None"], a:0},
+        {q:"Which is good for pollinators?", opts:["Flower gardens","Concrete blank spaces","Noise"], a:0}
+      ],
+      7: [
+        {q:"What should you do if you find a plastic bag in a river?", opts:["Collect & dispose properly","Jump out","Play with it"], a:0},
+        {q:"What is an example of sustainable practice?", opts:["Using renewable energy","Cutting all trees","Draining wetlands"], a:0},
+        {q:"If you have old electronics, you should:", opts:["Take to e-waste recycling","Throw in dustbin","Burn them"], a:0},
+        {q:"What causes smog?", opts:["Vehicle emissions + smoke","Rain only","Ocean waves"], a:0},
+        {q:"Which action reduces carbon footprint?", opts:["Use public transport/cycle","Drive alone","Ignore"], a:0},
+        {q:"Why are wetlands important?", opts:["Biodiversity & water filtration","Just water","No use"], a:0},
+        {q:"Which reduces runoff into rivers?", opts:["Planting vegetation","Making more concrete","Removing soil"], a:0},
+        {q:"What is composting?", opts:["Turning organic waste into soil conditioner","Burning waste","Mixing plastic"], a:0},
+        {q:"Which animal helps seed dispersal?", opts:["Birds & mammals","Rocks","Buildings"], a:0},
+        {q:"How to make school eco-friendly?", opts:["Energy saving & waste segregation","Ignore environment","Use more plastic"], a:0}
+      ],
+      8: [
+        {q:"Choose a way to reduce heat island effect:", opts:["Increase green cover","Build more asphalt","Paint roofs black"], a:0},
+        {q:"What is ocean acidification from?", opts:["Excess CO₂ in atmosphere","Ice melting only","Noise"], a:0},
+        {q:"Microplastics are a concern because they:", opts:["Enter food chains","Enhance soil","Create oxygen"], a:0},
+        {q:"Which reduces freshwater use?", opts:["Rainwater harvesting","Wasting water","No change"], a:0},
+        {q:"What is sustainable agriculture?", opts:["Methods that protect environment","Using more chemicals","Monoculture only"], a:0},
+        {q:"How can students help biodiversity?", opts:["Create native gardens","Buy exotic pets illegally","Cut trees"], a:0},
+        {q:"Which is a low-carbon transport?", opts:["Rail & cycle","Helicopter","Freight truck"], a:0},
+        {q:"What does 'reuse' mean?", opts:["Use again","Make new always","Throw away"], a:0},
+        {q:"Which is a clean energy job example?", opts:["Solar technician","Coal miner","Smoke maker"], a:0},
+        {q:"What is circular economy idea?", opts:["Keep resources in use longer","Use once and throw","Burn everything"], a:0}
+      ],
+      9: [
+        {q:"What is biomagnification?", opts:["Toxin concentration up food chain","Less toxins","More water"], a:0},
+        {q:"Primary producers are:", opts:["Plants & algae","Lions","Rocks"], a:0},
+        {q:"What does EIA evaluate?", opts:["Environmental impact of projects","Economic profits only","No impact"], a:0},
+        {q:"Photovoltaic panels produce:", opts:["Electricity from sunlight","Heat only","Wind"], a:0},
+        {q:"What is sustainable fisheries practice?", opts:["Avoid overfishing","Catch everything","Pollute water"], a:0},
+        {q:"Why protect wetlands?", opts:["Flood control & biodiversity","Nothing","Only for boats"], a:0},
+        {q:"Which energy reduces GHG per unit?", opts:["Wind & Solar","Coal","Diesel"], a:0},
+        {q:"What is ecological restoration?", opts:["Bringing ecosystems back","Destroying them","Painting them"], a:0},
+        {q:"What is a keystone species?", opts:["Species with large effect on ecosystem","Most common species","Smallest species"], a:0},
+        {q:"How to reduce plastic use?", opts:["Use alternatives & reuse","Burn plastic","Produce more plastic"], a:0}
+      ],
+      10: [
+        {q:"Carbon trading aims to:", opts:["Provide economic incentives to reduce emissions","Increase emissions","Make more cars"], a:0},
+        {q:"BOD indicates:", opts:["Organic pollution in water","Air quality","Noise levels"], a:0},
+        {q:"Paris Agreement involves:", opts:["Nations committing to emission reductions","Only one country","Only cities"], a:0},
+        {q:"Afforestation differs from reforestation how?", opts:["Afforestation is planting where no forest existed","They're the same","Both mean cutting trees"], a:0},
+        {q:"What reduces urban air pollution?", opts:["Cleaner fuels & public transport","More private cars","Open burning"], a:0},
+        {q:"What is sustainable waste management?", opts:["Reduce, Reuse, Recycle","Only dump in landfill","Burn all waste"], a:0},
+        {q:"What is a renewable energy advantage?", opts:["Infinite & low GHG","Always expensive","Causes pollution"], a:0},
+        {q:"What is a thermoelectric plant byproduct?", opts:["Fly ash","Wind","Sunlight"], a:0},
+        {q:"How can cities be resilient to climate change?", opts:["Green infrastructure & planning","Ignore risks","Remove parks"], a:0},
+        {q:"What is 'blue economy' about?", opts:["Sustainable use of ocean resources","Using more oil","Polluting seas"], a:0}
+      ],
+      11: [
+        {q:"CITES protects species by:", opts:["Regulating international trade","Polluting habitats","Granting licenses to hunters"], a:0},
+        {q:"Edge effect usually:", opts:["Alters conditions near habitat edges","Improves all habitats","Is only beneficial"], a:0},
+        {q:"IPAT shows impact increases with:", opts:["Population, Affluence, Technology","Only Population","Only Technology"], a:0},
+        {q:"Denitrification returns nitrogen to:", opts:["Atmosphere as N₂","Soil as nitrate","Water as H₂O"], a:0},
+        {q:"Biogas uses:", opts:["Organic waste to produce methane","Coal to make methane","Plastic to make methane"], a:0},
+        {q:"Lotka-Volterra equations model:", opts:["Predator-prey dynamics","Plant growth only","Wind patterns"], a:0},
+        {q:"Biodiversity hotspot needs:", opts:["High endemism & loss of habitat","Low species count","Only deserts"], a:0},
+        {q:"Adaptive management in conservation is:", opts:["Learning by doing & adjusting","Rigid plans only","No monitoring"], a:0},
+        {q:"Biomass energy comes from:", opts:["Organic matter","Fossil fuels","Rocks"], a:0},
+        {q:"What is photochemical smog from?", opts:["Vehicle emissions + sunlight","Rain only","Soil dust"], a:0}
+      ],
+      12: [
+        {q:"Precautionary principle suggests:", opts:["Act to prevent harm even if not fully certain","Wait for certainty","Ignore risks"], a:0},
+        {q:"Clean Development Mechanism is under:", opts:["Kyoto Protocol","Paris Agreement only","Montreal Protocol"], a:0},
+        {q:"NPP stands for:", opts:["Net Primary Productivity","National Park Program","New Pollution Plan"], a:0},
+        {q:"Island biogeography says species number depends on:", opts:["Area & isolation","Altitude only","Soil only"], a:0},
+        {q:"Flue Gas Desulfurization removes:", opts:["SO₂ from emissions","CO₂ only","Ozone"], a:0},
+        {q:"LD50 measures:", opts:["Toxicity (median lethal dose)","Energy","Sound level"], a:0},
+        {q:"Ecological footprint measures:", opts:["Bioproductive area needed","Times table","Weight"], a:0},
+        {q:"Wetland conservation supports:", opts:["Biodiversity & flood control","Desertification","Only recreation"], a:0},
+        {q:"Carbon sequestration methods include:", opts:["Afforestation, soil management","Only urbanization","Only burning"], a:0},
+        {q:"Sustainable development balances:", opts:["Ecological, economic, social needs","Only economy","Only environment"], a:0}
+      ]
+    }
+  };
+
+  // ---------- registration / login ----------
+  function onRegister(){
+    const name = inpName.value.trim();
+    const email = inpEmail.value.trim().toLowerCase();
+    const mobile = inpMobile.value.trim();
+    const klass = inpClass.value;
+    if(!name || !email || !klass){ alert('Please fill name, email and class'); return; }
+    // check existing by email
+    users = readUsers();
+    let existing = users.find(u=>u.email===email);
+    if(existing){
+      if(!confirm('User exists — load existing profile?')) return;
+      currentUser = existing;
+    } else {
+      currentUser = {
+        id: 'u'+Math.random().toString(36).slice(2,9),
+        name, email, mobile, klass:parseInt(klass), points:0, badges:[], challenges:{}, created:Date.now()
+      };
+      users.push(currentUser); writeUsers(users);
+    }
+    openApp();
+  }
+  function loadExisting(){
+    users = readUsers();
+    const email = inpEmail.value.trim().toLowerCase();
+    if(!email){ alert('Enter email to load existing'); return; }
+    const existing = users.find(u=>u.email===email);
+    if(!existing){ alert('No user found with that email'); return; }
+    currentUser = existing; openApp();
+  }
+  function logout(){
+    currentUser = null;
+    saveUsersToStorage();
+    location.reload();
+  }
+  function saveUsersToStorage(){ writeUsers(users); }
+
+  // ---------- UI helpers ----------
+  function hideAllPanels(){ quizCard.classList.add('hidden'); gamesCard.classList.add('hidden'); challengesCard.classList.add('hidden'); leaderCard.classList.add('hidden'); classCompCard.classList.add('hidden'); }
+  function showPanel(name){
+    hideAllPanels();
+    if(name==='quiz') quizCard.classList.remove('hidden');
+    if(name==='games') gamesCard.classList.remove('hidden');
+    if(name==='challenges') challengesCard.classList.remove('hidden');
+    if(name==='leader') leaderCard.classList.remove('hidden');
+    if(name==='classComp') classCompCard.classList.remove('hidden');
+    if(name==='quiz') updateQuizUI();
+    if(name==='leader') renderLeaderboard();
+    if(name==='classComp') renderClassCompetition();
+  }
+
+  function openApp(){
+    regCard.classList.add('hidden');
+    app.classList.remove('hidden');
+    avatar.innerText = (currentUser.name||'U')[0].toUpperCase();
+    pName.innerText = currentUser.name;
+    pClass.innerText = currentUser.klass;
+    pPoints.innerText = currentUser.points;
+    renderBadges();
+    updateEcoPet();
+    renderChallenges();
+    memNew(); // init memory
+    renderLeaderboard();
+  }
+
+  // ---------- tiers & badges ----------
+  function tierByPoints(p){
+    if(p>=1000) return 'Elite';
+    if(p>=700) return 'Diamond';
+    if(p>=400) return 'Platinum';
+    if(p>=200) return 'Gold';
+    if(p>=100) return 'Silver';
+    return 'Bronze';
+  }
+  function renderBadges(){
+    badgesArea.innerHTML = '';
+    (currentUser.badges||[]).forEach(b=>{
+      const d = document.createElement('div'); d.className='badge'; d.innerText=b; badgesArea.appendChild(d);
+    });
+    pPoints.innerText = currentUser.points;
+    pTier.innerText = tierByPoints(currentUser.points);
+  }
+
+  // ---------- QUIZ logic ----------
+  let quizState = null;
+  function updateQuizUI(){
+    quizArea.innerHTML = `<div class="muted">Choose mode (Syllabus / Fun) and Start the 10-question quiz.</div>`;
+  }
+  function startQuiz(){
+    // choose bank based on mode and class
+    const mode = quizModeSel.value; // 'syllabus' or 'fun'
+    const klass = currentUser.klass;
+    let bank = BANK[mode][klass];
+    if(!bank || bank.length===0){ alert('No questions for this class/mode yet'); return; }
+    // shuffle and pick 10 (or repeat if bank shorter)
+    bank = shuffle(bank.slice());
+    let qs = bank.slice(0,10);
+    if(qs.length<10){
+      // pad by cycling
+      while(qs.length<10){ qs.push(bank[qs.length % bank.length]); }
+    }
+    quizState = { mode, klass, qs, idx:0, score:0 };
+    renderQuizQuestion();
+  }
+  function renderQuizQuestion(){
+    if(!quizState) return;
+    const q = quizState.qs[quizState.idx];
+    quizArea.innerHTML = `<div style="font-weight:700">Q ${quizState.idx+1}: ${q.q}</div>`;
+    q.opts.forEach((opt, i)=>{
+      const b = document.createElement('button');
+      b.innerText = opt; b.style.margin = '6px';
+      b.onclick = ()=>{
+        if(i === q.a){
+          quizState.score += 10; // 10 points per correct
+          // award badge for milestones
+          if(quizState.score >= 80) addBadgeOnce('💧 Water Protector');
+          showFact();
+        }
+        quizState.idx++;
+        if(quizState.idx >= quizState.qs.length) finishQuiz();
+        else renderQuizQuestion();
+      };
+      quizArea.appendChild(b);
+    });
+  }
+  function finishQuiz(){
+    const earned = quizState.score;
+    currentUser.points += earned;
+    // update badges & save
+    if(earned >= 50) addBadgeOnce('🌳 Quiz Champion');
+    saveCurrentUser();
+    renderBadges();
+    updateEcoPet();
+    renderLeaderboard();
+    quizArea.innerHTML = `<div style="font-weight:700">Quiz complete! You earned ${earned} points.</div>`;
+    quizState = null;
+  }
+
+  // ---------- Games ----------
+  // Memory Match
+  let memState = {};
+  function memNew(){
+    memGrid.innerHTML = '';
+    const symbols = ['🌳','🌊','☀️','♻️','🐝','🌱','🍃','💧'];
+    const deck = shuffle(symbols.concat(symbols));
+    memState = { deck, open:[], matched:0 };
+    deck.forEach((v,i)=>{
+      const btn = document.createElement('button');
+      btn.style.padding='12px'; btn.style.fontSize='20px';
+      btn.innerText = '❓'; btn.dataset.i = i;
+      btn.onclick = ()=>{
+        if(btn.innerText !== '❓' || memState.open.length===2) return;
+        btn.innerText = v;
+        memState.open.push({i,btn});
+        if(memState.open.length===2){
+          const [a,b] = memState.open;
+          if(memState.deck[a.i] === memState.deck[b.i]){
+            memState.matched += 1;
+            memCnt.innerText = memState.matched;
+            currentUser.points += 5;
+            saveCurrentUser(); renderBadges(); updateEcoPet(); renderLeaderboard();
+            memState.open = [];
+            if(memState.matched === (deck.length/2)) { currentUser.points += 40; addBadgeOnce('🔋 Memory Master'); saveCurrentUser(); renderBadges(); updateEcoPet(); renderLeaderboard(); alert('Memory completed! Bonus awarded.'); }
+          } else {
+            setTimeout(()=>{ a.btn.innerText='❓'; b.btn.innerText='❓'; memState.open=[]; },600);
+          }
+        }
+      };
+      memGrid.appendChild(btn);
+    });
+    memCnt.innerText = '0';
+  }
+
+  // Snake (simple)
+  let snakeLoop = null;
+  let snakeState = null;
+  function snakeStart(){
+    if(snakeLoop) cancelAnimationFrame(snakeLoop);
+    const cvs = snakeCanvas;
+    const ctx = cvs.getContext('2d');
+    snakeState = { grid:16, pos:{x:5,y:5}, vel:{x:0,y:0}, trail:[], tail:5, apple:{x:10,y:8}, score:0 };
+    document.onkeydown = e=>{
+      if(e.key==='ArrowLeft' && snakeState.vel.x!==1) snakeState.vel={x:-1,y:0};
+      if(e.key==='ArrowRight' && snakeState.vel.x!==-1) snakeState.vel={x:1,y:0};
+      if(e.key==='ArrowUp' && snakeState.vel.y!==1) snakeState.vel={x:0,y:-1};
+      if(e.key==='ArrowDown' && snakeState.vel.y!==-1) snakeState.vel={x:0,y:1};
+    };
+    function step(){
+      // move
+      snakeState.pos.x += snakeState.vel.x;
+      snakeState.pos.y += snakeState.vel.y;
+      const W = cvs.width / snakeState.grid;
+      const H = cvs.height / snakeState.grid;
+      if(snakeState.pos.x < 0) snakeState.pos.x = W-1;
+      if(snakeState.pos.x >= W) snakeState.pos.x = 0;
+      if(snakeState.pos.y < 0) snakeState.pos.y = H-1;
+      if(snakeState.pos.y >= H) snakeState.pos.y = 0;
+      // draw
+      ctx.fillStyle = '#000'; ctx.fillRect(0,0,cvs.width,cvs.height);
+      ctx.fillStyle = '#0f0';
+      snakeState.trail.push({x:snakeState.pos.x,y:snakeState.pos.y});
+      while(snakeState.trail.length > snakeState.tail) snakeState.trail.shift();
+      snakeState.trail.forEach(t=>ctx.fillRect(t.x*snakeState.grid,t.y*snakeState.grid,snakeState.grid-2,snakeState.grid-2));
+      ctx.fillStyle = '#f00'; ctx.fillRect(snakeState.apple.x*snakeState.grid,snakeState.apple.y*snakeState.grid,snakeState.grid-2,snakeState.grid-2);
+      // apple eaten?
+      if(snakeState.apple.x === snakeState.pos.x && snakeState.apple.y === snakeState.pos.y){
+        snakeState.tail++; snakeState.score += 5; snakeScoreEl.innerText = snakeState.score;
+        currentUser.points += 5; saveCurrentUser(); renderBadges(); updateEcoPet(); renderLeaderboard();
+        snakeState.apple = { x: Math.floor(Math.random()*W), y: Math.floor(Math.random()*H) };
+      }
+      snakeLoop = requestAnimationFrame(step);
+    }
+    snakeLoop = requestAnimationFrame(step);
+  }
+
+  // ---------- Challenges (tick to complete) ----------
+  const CHALLENGES = [
+    {id:'plant', text:'Plant a seed / sapling'},
+    {id:'segregate', text:'Segregate household waste today'},
+    {id:'walk', text:'Walk or cycle to school'},
+    {id:'savewater', text:'Save water (turn taps off while brushing)'}
+  ];
+  function renderChallenges(){
+    challengeListEl.innerHTML = '';
+    CHALLENGES.forEach(ch=>{
+      const row = document.createElement('div');
+      row.className='row'; row.style.justifyContent='space-between'; row.style.marginBottom='8px';
+      const left = document.createElement('div'); left.innerText = ch.text;
+      const right = document.createElement('div');
+      const cb = document.createElement('input'); cb.type='checkbox'; cb.checked = !!(currentUser.challenges && currentUser.challenges[ch.id]);
+      cb.onchange = ()=>{
+        currentUser.challenges = currentUser.challenges || {};
+        currentUser.challenges[ch.id] = cb.checked;
+        if(cb.checked){ currentUser.points += 20; addBadgeOnce('🌱 Challenge Doer'); saveCurrentUser(); renderBadges(); updateEcoPet(); renderLeaderboard(); }
+        else { /* uncheck doesn't remove points for simplicity */ }
+      };
+      right.appendChild(cb);
+      row.appendChild(left); row.appendChild(right);
+      challengeListEl.appendChild(row);
+    });
+  }
+
+  // ---------- leaderboard & class competition ----------
+  function renderLeaderboard(){
+    users = readUsers();
+    const sorted = users.slice().sort((a,b)=>b.points-a.points);
+    let html = '<table><tr><th>#</th><th>Name</th><th>Class</th><th>Points</th><th>Tier</th></tr>';
+    sorted.forEach((u,i)=>{ html += `<tr><td>${i+1}</td><td>${escapeHtml(u.name)}</td><td>${u.klass}</td><td>${u.points}</td><td>${tierByPoints(u.points)}</td></tr>`; });
+    html += '</table>';
+    leaderBoardEl.innerHTML = html;
+  }
+  function renderClassCompetition(){
+    users = readUsers();
+    const byClass = {};
+    users.forEach(u=>{ byClass[u.klass] = byClass[u.klass] || []; byClass[u.klass].push(u.points || 0); });
+    let html = '<table><tr><th>Class</th><th>Avg Points</th></tr>';
+    Object.keys(byClass).sort((a,b)=>a-b).forEach(k=>{
+      const arr = byClass[k]; const avg = Math.round(arr.reduce((a,b)=>a+b,0)/arr.length || 0);
+      html += `<tr><td>${k}</td><td>${avg}</td></tr>`;
+    });
+    html += '</table>';
+    classCompEl.innerHTML = html;
+  }
+
+  // ---------- badges helper ----------
+  function addBadgeOnce(b){
+    currentUser.badges = currentUser.badges || [];
+    if(!currentUser.badges.includes(b)){ currentUser.badges.push(b); saveCurrentUser(); renderBadges(); }
+  }
+
+  // ---------- save current user ----------
+  function saveCurrentUser(){
+    users = readUsers();
+    const idx = users.findIndex(u=>u.email === currentUser.email);
+    if(idx>=0) users[idx] = currentUser;
+    else users.push(currentUser);
+    writeUsers(users);
+  }
+
+  // ---------- utility ----------
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function updateEcoPet(){ const pts = currentUser.points || 0; if(pts<50) ecoPet.innerText='🌱'; else if(pts<200) ecoPet.innerText='🌿'; else if(pts<500) ecoPet.innerText='🌳'; else ecoPet.innerText='🌲'; }
+
+  // ---------- initial UI wiring ----------
+  document.getElementById('btnQuiz').addEventListener('click', ()=>showPanel('quiz'));
+  document.getElementById('btnGames').addEventListener('click', ()=>showPanel('games'));
+  document.getElementById('btnChallenges').addEventListener('click', ()=>showPanel('challenges'));
+  document.getElementById('btnLeaderboard').addEventListener('click', ()=>showPanel('leader'));
+  document.getElementById('btnClassComp').addEventListener('click', ()=>showPanel('classComp'));
+
+  // ---------- when script loads, if a last user exists, prefill email -->
+  (function prefill(){
+    users = readUsers();
+    if(users.length>0){ inpEmail.value = users[users.length-1].email || ''; }
+  })();
+
+  // ---------- mock: when user registers, show app (already wired) ----------
+  // NOTE: registration button already bound above to onRegister
+
+  // ---------- show panels when app open ----------
+  // fallback functions
+  function startQuiz(){ startQuiz(); } // no-op placeholder to avoid linter confusion
+
+  // Fix startQuiz reference to actual function above
+  startQuizBtn.onclick = function(){ startQuiz(); };
+
+  // If user registered during the session, openApp called inside onRegister
+
+  // ---------- expose certain functions to buttons in HTML (for games) ----------
+  window.memNew = memNew;
+  window.snakeStart = snakeStart;
+
+  // ---------- ensure memory & snake initialize if user returns ----------
+  // (handled by openApp)
+
+  // ---------- END of script ----------
+  </script>
+</body>
+</html>
